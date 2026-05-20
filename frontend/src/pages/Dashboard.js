@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -58,24 +57,6 @@ const pieData = [
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
 function Dashboard() {
-  const [analytics, setAnalytics] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchAnalytics();
-  }, []);
-
-  const fetchAnalytics = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/analytics");
-      const data = await response.json();
-      setAnalytics(data);
-    } catch (error) {
-      console.error("Error fetching analytics:", error);
-    }
-    setLoading(false);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
