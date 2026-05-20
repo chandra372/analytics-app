@@ -14,6 +14,8 @@ import {
 } from "recharts";
 import Navbar from "../components/Navbar";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 const revenueData = [
   {
     name: "Jan",

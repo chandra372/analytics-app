@@ -1,15 +1,19 @@
 import { useState } from "react";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -21,12 +25,16 @@ function Login() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/dashboard";
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 500);
       } else {
-        alert(data.message);
+        setError(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
-      alert("Error: " + error.message);
+      setError("Network error: " + error.message + ". Check if backend is running.");
+      console.error("Login error:", error);
     }
     setLoading(false);
   };
@@ -41,6 +49,11 @@ function Login() {
           Login
         </h2>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-gray-700 font-medium mb-2">
@@ -51,7 +64,8 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               placeholder="Enter your email"
             />
           </div>
@@ -65,7 +79,8 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               placeholder="Enter your password"
             />
           </div>
